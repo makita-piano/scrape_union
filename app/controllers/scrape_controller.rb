@@ -1,9 +1,45 @@
 class ScrapeController < ApplicationController
   def index
-    require 'mechanize'
     require 'open-uri'
     require 'nokogiri'
-    
+    require 'selenium-webdriver'
+
+    driver = Selenium::WebDriver.for(:firefox)
+
+    site = params[:site]
+    days_later = params[:days_later]
+    @json = {}
+
+    if site == 'booking'
+      #10.times do |i|
+        start_date = Date.today + days_later.to_i #+ i
+        url = "https://www.booking.com/hotel/jp/la-union.ja.html?checkin=#{start_date.to_s}&checkout=#{(start_date + 1).to_s}&group_adults=1"
+        #url = "http://118.27.39.173:3456/scrape/test"
+
+        #json = JSON.parse(open(url).read)
+        #html = json['markup']
+
+        driver.navigate.to(url)
+        doc = Nokogiri::HTML(driver.page_source)
+        doc.css('.urgency_message_red').count
+
+        #doc = Nokogiri::HTML.parse(html)
+        @json["c"] = doc
+        #@json["a"]  = doc.search(".urgency_message_red")
+
+        #html = agent.get("#{page}").content
+        #@json["a"] = html
+        #contents = Nokogiri::HTML(html, nil, 'utf-8')
+        #@json["a"] = contents.search("div[@data-position='1']")
+        #@json["a"] = contents.search("div[@data-position='1']")[0].content
+      #end
+    end
+  end
+
+  def test
+  end
+
+
 =begin
 
     channel = params[:channel]
@@ -127,5 +163,5 @@ class ScrapeController < ApplicationController
       format.json { render json: @json_h }
     end
 =end
-  end
+  #end
 end
